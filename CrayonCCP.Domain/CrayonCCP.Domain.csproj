@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <LangVersion>latestmajor</LangVersion>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <Folder Include="DTOs\Base\" />
+      <Folder Include="DTOs\Messages\" />
+      <Folder Include="DTOs\Requests\External\" />
+      <Folder Include="DTOs\Responses\External\" />
+      <Folder Include="DTOs\Responses\Internal\" />
+    </ItemGroup>
+
+</Project>

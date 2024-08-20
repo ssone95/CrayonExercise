@@ -1,0 +1,13 @@
+﻿services:
+  redis:
+    image: redis
+    cpu_count: 1
+    mem_limit: 1G
+    restart: unless-stopped
+    ports:
+      - 6379:6379
+  crayonccp:
+    image: crayonccp
+    build:
+      context: .
+      dockerfile: CrayonCCP/Dockerfile
