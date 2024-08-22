@@ -52,7 +52,7 @@ public class Program
             // app.UseReDoc(c => c.RoutePrefix = "swagger");
             app.UseSwaggerUI(c => c.RoutePrefix = "swagger");
         }
-
+        
         app.UseHttpsRedirection();
 
         app.UseAuthentication();

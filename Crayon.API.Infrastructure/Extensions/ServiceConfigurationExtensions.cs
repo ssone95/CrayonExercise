@@ -6,7 +6,10 @@ using Crayon.API.Infrastructure.Services.Middlewares;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using AutoMapper.Configuration;
+using Crayon.API.Domain.DTOValidators;
 using Crayon.API.Domain.MappingProfiles;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 
 namespace Crayon.API.Infrastructure.Extensions;
 
@@ -22,6 +25,14 @@ public static class ServiceConfigurationExtensions
         services.AddScoped<IOrderLineRepository, OrderLineRepository>();
         services.AddScoped<ILicenseRepository, LicenseRepository>();
 
+        var validationAssembly = typeof(LoginRequestValidator).Assembly;
+        services.AddFluentValidationAutoValidation(x =>
+        {
+            x.DisableDataAnnotationsValidation = true;
+        });
+
+        services.AddValidatorsFromAssembly(validationAssembly);
+        
         var modelAssembly =
             typeof(CustomerAccountToCustomerRegistrationResponseProfile).Assembly;
         services.AddAutoMapper(o =>
