@@ -1,13 +1,18 @@
 ﻿FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 USER $APP_UID
 WORKDIR /app
-EXPOSE 8080
-EXPOSE 8081
+EXPOSE 5220
+EXPOSE 5221
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
+
+COPY ["Crayon.API.Domain/Crayon.API.Domain.csproj", "Crayon.API.Domain/"]
+COPY ["Crayon.API.Infrastructure/Crayon.API.Infrastructure.csproj", "Crayon.API.Infrastructure/"]
 COPY ["Crayon.API/Crayon.API.csproj", "Crayon.API/"]
+RUN dotnet restore "Crayon.API.Domain/Crayon.API.Domain.csproj"
+RUN dotnet restore "Crayon.API.Infrastructure/Crayon.API.Infrastructure.csproj"
 RUN dotnet restore "Crayon.API/Crayon.API.csproj"
 COPY . .
 WORKDIR "/src/Crayon.API"
