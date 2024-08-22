@@ -20,11 +20,12 @@ public static class DbConfigurationExtensions
         if (string.IsNullOrEmpty(dbConnectionString))
             throw new Exception("CCPDbConnectionString can't be null or empty!");
         
+        Console.WriteLine($"Connection string used: {dbConnectionString}");
         return services.AddDbContext<AppDbContext>(o =>
         {
             o.UseSqlServer(dbConnectionString, dbo =>
             {
-                dbo.CommandTimeout(builderEnvironment.IsDevelopment() ? 60 : 30);
+                dbo.CommandTimeout(builderEnvironment.IsDevelopment() ? 90 : 60);
             });
         });
     }

@@ -9,6 +9,8 @@ public class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
+        builder.SetupConfiguration();
+
         // Add services to the container.
 
         builder.Services.ConfigureDatabase(builder.Configuration, builder.Environment);

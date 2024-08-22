@@ -27,7 +27,7 @@ public static class DbConfigurationExtensions
         {
             o.UseSqlServer(dbConnectionString, dbo =>
             {
-                dbo.CommandTimeout(builderEnvironment.IsDevelopment() ? 60 : 30);
+                dbo.CommandTimeout(builderEnvironment.IsDevelopment() ? 90 : 60);
             });
         });
     }

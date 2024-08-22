@@ -1,35 +1,80 @@
 ﻿services:
   redis:
     image: redis
-    cpu_count: 1
-    mem_limit: 1G
     restart: unless-stopped
     ports:
       - 6379:6379
+    networks:
+      - crayon_net
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1G
+  sqldb:
+    image: mcr.microsoft.com/mssql/server:2019-latest  # SQL Server 2019
+    container_name: sqldb
+    environment:
+      ACCEPT_EULA: "Y"
+      SA_PASSWORD: "CHANGEME"  # Make sure to use a strong password
+      MSSQL_PID: "Developer"
+    ports:
+      - "1443:1433"
+    volumes:
+      - sql_data:/var/opt/mssql
+    networks:
+      - crayon_net
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 1G
   crayonccp:
     image: crayonccp
     build:
       context: .
       dockerfile: CrayonCCP/Dockerfile
     environment:
-      ConnectionStrings__CrayonDbConnectionString: "<replace-this>",
-      Security__Jwt__Secret: "<replace-this>",
-      Security__Jwt__Issuer: "http://localhost:5221",
-      Security__Jwt__Audience: "http://localhost:5221",
-      Security__InitialUserDetails__Username: "Admin",
-      Security__InitialUserDetails__Email: "<replace-this>",
-      Security__InitialUserDetails__Password: "<replace-this>",
-      Security__CCP__ClientId: "<replace-this>",
-      Security__CCP__ClientSecret: "<replace-this>",
-      Security__CCP__Endpoint: "<replace-this>"
+      - "ASPNETCORE_URLS=http://+:5121"
+      - "ASPNETCORE_ENVIRONMENT=Development"
+      - "CCPRedisConnectionString=<configured-later>"
+      - "InitialClients__Crayon__Name=Crayon API"
+    ports:
+      - "5121:5121"
+    networks:
+      - crayon_net
+    depends_on:
+      - redis
+      - sqldb
+      - crayonapi
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 1G
   crayonapi:
     image: crayon.api
     build:
       context: .
       dockerfile: Crayon.API/Dockerfile
     environment:
-      ConnectionStrings__CCPDbConnectionString: "<replace-this>"
-      CCPRedisConnectionString: "<replace-this>"
-      InitialClients__Crayon__Id: "00000000-0000-0000-0000-000000000001"
-      InitialClients__Crayon__Name: "Crayon API"
-      InitialClients__Crayon__Secret: "<replace-this>"
+      - "ASPNETCORE_URLS=http://+:5221"
+      - "ASPNETCORE_ENVIRONMENT=Development"
+      - "Security__CCP__Endpoint=http://localhost:5121"
+    ports:
+      - "5221:5221"
+    networks:
+      - crayon_net
+    depends_on:
+      - sqldb
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 1G
+
+volumes:
+  sql_data:  # Named volume for SQL Server persistent storage
+
+networks:
+  crayon_net:  # Custom network for the services
